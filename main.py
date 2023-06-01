@@ -31,6 +31,57 @@ for pagina in paginas:
 # print (pagina_html)
 
     movie_containers = pagina_html.find_all('div', class_ = 'lister-item mode-advanced')
-print(movie_containers)
+#captura titulo
+    for container in movie_containers:
+        if container.find('div', class_ = "ratings-metascore") is not None:
+            title = container.h3.a.text
+            titulos.append(title)
+            #captura ano de lançamento
+            if container.h3.find('span', class_ = 'lister-item-year text-muted unbold') is not None:
+                year = container.h3.find('span', class_ = 'lister-item-year text-muted unbold').text
+                anos.append(year)
+            else:
+                anos.append(None)
+            #captura nota 
+            if container.p.find('span', class_ = 'certificate') is not None:
+                rates = container.p.find('span', class_ = 'certificate').text
+                ratings.append(rates)
+            else:
+                ratings.append(None)
+            #captura genero
+            if container.p.find('span', class_ = 'genre') is not None:
+                genlis = container.p.find('span', class_ = 'genre').text.replace('/n','').strip().split(',')
+                genero.append(genlis)
+            else:
+                genero.append(None)
+            #captura duração
+            if container.p.find('span', class_ = 'runtime') is not None:
+                runt = int(container.p.find('span', class_ = 'runtime').text.replace(' min',''))
+                duracao.append(runt)
+            else:
+                duracao.append(None)
+            #captura avaliãção imdb
+            if container.strong.text is not None:
+                imdbv = float(container.strong.text.replace(',','.'))
+                imdb_ratings.append(imdbv)
+            else:
+                imdb_ratings.append(None)
+            #capturando votos
+            if container.find('span', attrs = {'name':'nv'})['data-value']is not None:
+                vote = int(container.find('span', attrs = {'name':'nv'})['data-value'])
+                votos.append(vote)
+            else:
+                votos.append(None)            
+
+listaFilme = pd.DataFrame({
+    'Ano de lançamento':anos,
+    'Título':titulos,
+    'Duração':duracao,
+    'Gênero':genero,    
+    'Nota':ratings
+})
+listaFilme.loc[:,'Ano de Lançamento'] = listaFilme['Ano de lançamento'].str[-5:-1]
+
+print (listaFilme)
 
 
